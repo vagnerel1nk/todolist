@@ -3,18 +3,25 @@ package mz.com.vagnerl1nk.todolist.filter;
 import java.io.IOException;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import mz.com.vagnerl1nk.todolist.users.IUserRepository;
 
 @Component
 public class FilterTaskAuth extends OncePerRequestFilter  {
+
+    @Autowired
+    private IUserRepository userRepository;
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -40,16 +47,25 @@ public class FilterTaskAuth extends OncePerRequestFilter  {
 
                 
                 // substring serve 
-               
+                // Fiz uma condição para validar o nome do usuario
+                var user =  this.userRepository.findByUsername(username);
+                if(user != null){
+                    response.sendError(401);
+                }else {
 
+                     var passwordVerifiy =  BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
+                    if(passwordVerifiy.verified) {
+                        filterChain.doFilter(request, response);
+                    }else {
+
+                        response.sendError(401);
+                    }         
+                    
+                }
 
                 // Fiz uma condição para validar o nome do usuario
-                // Fiz uma condição para validar o nome do usuari
                 // Se a aplicação tiver como senha e usuarios validos pode prosseguir
-        
-        filterChain.doFilter(request, response) ;           
-        
-        
+                
 
         } 
         
