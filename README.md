@@ -1,2 +1,2 @@
 # todolist
-App para Lista de tarefas
+Um applicativo web  para gerenciamento de tarefas
