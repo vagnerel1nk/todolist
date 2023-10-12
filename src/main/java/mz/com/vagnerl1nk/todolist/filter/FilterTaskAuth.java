@@ -26,9 +26,18 @@ public class FilterTaskAuth extends OncePerRequestFilter  {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
                 // Quero que a aplicação pege a autenticacao do usuario e a senha
-              var authorization =   request.getHeader("Authorization");
+              
+
+                // Fiz uma condição para validar o nome do usuario
+                // Se a aplicação tiver como senha e usuarios validos pode prosseguir
+
+                var servletPath = request.getServletPath();
+
+                
+
+                if(servletPath.equals("/tasks/")) {
+                    var authorization =   request.getHeader("Authorization");
               var authEncoded = authorization.substring("Basic".length()).trim();  
 
               byte[] authDecode = Base64.getDecoder().decode(authEncoded) ;
@@ -46,7 +55,7 @@ public class FilterTaskAuth extends OncePerRequestFilter  {
 
 
                 
-                // substring serve 
+        
                 // Fiz uma condição para validar o nome do usuario
                 var user =  this.userRepository.findByUsername(username);
                 if(user != null){
@@ -63,8 +72,10 @@ public class FilterTaskAuth extends OncePerRequestFilter  {
                     
                 }
 
-                // Fiz uma condição para validar o nome do usuario
-                // Se a aplicação tiver como senha e usuarios validos pode prosseguir
+            }else { 
+                filterChain.doFilter(request, response);
+            }
+
                 
 
         } 
