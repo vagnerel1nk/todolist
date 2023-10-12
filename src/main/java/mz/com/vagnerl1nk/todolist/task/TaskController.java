@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import mz.com.vagnerl1nk.todolist.utils.Utils;
 
 @RestController
 @RequestMapping("/tasks")
@@ -41,7 +42,7 @@ public class TaskController {
 
         if(currentDate.isAfter(taskModel.getStartAt()) || currentDate.isAfter(taskModel.getEndAt())) {
            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-           .body("Date start, and date End need to Bigger Than actualy date ");
+           .body("A data de inicio deve ser maior do que a data atual ");
 
         }
 
@@ -67,7 +68,12 @@ public class TaskController {
     @PutMapping("/{id}")
     public TaskModel  update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
         var idUser = request.getAttribute("idUser");
-        taskModel.setIdUser((UUID) idUser);
-       return  this.taskRepository.save(taskModel);
+
+        var task = this.taskRepository.findById(id).orElse(null);
+        Utils.copyNonNullProperties(taskModel, task);
+
+    
+       return this.taskRepository.save(task);
     }
 }
+ 
