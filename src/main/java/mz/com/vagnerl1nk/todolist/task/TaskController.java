@@ -33,7 +33,6 @@ public class TaskController {
       */
     @PostMapping("/")
     public ResponseEntity create(@RequestBody TaskModel taskModel,HttpServletRequest request) {  
-        System.out.println("Arrived at Controller");
         var idUser = request.getAttribute("idUser");
         taskModel.setIdUser((UUID) idUser);
 
@@ -48,7 +47,7 @@ public class TaskController {
 
         if (taskModel.getStartAt().isAfter(taskModel.getEndAt())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Date start, need to smaller Than End date ");
+            .body("A data do inicio deve ser menor que a data de termino ");
         }
 
 
